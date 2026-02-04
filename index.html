@@ -13,34 +13,23 @@
         .stage { position: absolute; width: 100%; max-width: 360px; text-align: center; opacity: 0; display: none; transition: opacity 1s ease; z-index: 10; }
         .active { opacity: 1; display: block; }
         h1 { letter-spacing: 8px; color: var(--gold); font-size: 2.2rem; margin-bottom: 10px; text-shadow: 0 0 15px rgba(212,175,55,0.3); }
-        textarea { width: 100%; height: 120px; background: #151515; border: 1px solid #333; color: #fff; padding: 15px; border-radius: 15px; font-size: 1rem; outline: none; resize: none; margin-top: 20px; transition: border 0.3s; }
-        textarea:focus { border-color: var(--gold); }
+        textarea { width: 100%; height: 120px; background: #151515; border: 1px solid #333; color: #fff; padding: 15px; border-radius: 15px; font-size: 1rem; outline: none; resize: none; margin-top: 20px; }
         button { background: transparent; border: 1.5px solid var(--gold); color: var(--gold); padding: 15px 0; width: 100%; max-width: 250px; cursor: pointer; border-radius: 40px; font-weight: bold; font-size: 1rem; margin-top: 20px; transition: 0.4s; letter-spacing: 2px; }
-        button:hover { background: rgba(212,175,55,0.1); box-shadow: 0 0 20px rgba(212,175,55,0.2); }
-        
-        /* 卡牌呼吸感動畫 */
+        button:active { background: var(--gold); color: #000; }
         .cat-card { background: #151515; border: 1px solid var(--gold); border-radius: 20px; overflow: hidden; box-shadow: 0 10px 50px rgba(0,0,0,0.9); margin-top: 10px; animation: cardEntry 1.2s ease-out; }
-        @keyframes cardEntry {
-            0% { transform: scale(0.95) translateY(20px); opacity: 0; }
-            100% { transform: scale(1) translateY(0); opacity: 1; }
-        }
-        .cat-img { width: 100%; height: auto; display: block; border-bottom: 1px solid var(--gold); background: #222; filter: grayscale(20%); transition: 0.5s; }
-        .cat-card:hover .cat-img { filter: grayscale(0%); }
+        @keyframes cardEntry { 0% { transform: scale(0.95) translateY(20px); opacity: 0; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+        .cat-img { width: 100%; height: auto; display: block; border-bottom: 1px solid var(--gold); background: #222; min-height: 250px; }
         .card-body { padding: 20px; }
         .title { font-size: 1.3rem; color: #fff; margin-bottom: 10px; font-weight: bold; }
         .msg { color: #aaa; line-height: 1.7; text-align: justify; font-size: 0.9rem; }
         .footer-note { font-size: 0.7rem; color: #444; margin-top: 30px; letter-spacing: 1px; }
-        
-        /* 載入中文字 */
         .loading-text { font-style: italic; color: var(--gold); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
     </style>
 </head>
 <body>
 
-<audio id="bgm" loop preload="auto">
-    <source src="https://cdn.pixabay.com/audio/2022/01/21/audio_3106eb6f6b.mp3" type="audio/mpeg">
-</audio>
+<audio id="bgm" loop preload="auto" src="https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3"></audio>
 <canvas id="canvas"></canvas>
 
 <div class="container">
@@ -49,27 +38,19 @@
         <p style="color:#666; letter-spacing: 3px;">讓煩惱隨貓砂而去</p>
         <button onclick="init()">[ 進入儀式 ]</button>
     </div>
-
-    <div id="step1" class="stage">
-        <p style="font-size:1.2rem; color:#fff; letter-spacing: 2px;">請放下你的執念...</p>
-    </div>
-
+    <div id="step1" class="stage"><p style="font-size:1.2rem; color:#fff; letter-spacing: 2px;">請放下你的執念...</p></div>
     <div id="step2" class="stage">
         <h1>鏟除煩惱</h1>
         <textarea id="userInput" placeholder="寫下任何心累的事，讓主子埋了它..."></textarea>
         <button onclick="release()">[ 隨貓砂而去 ]</button>
     </div>
-
     <div id="step3" class="stage">
-        <div id="loadingUI" style="display:none;">
-            <p class="loading-text">主子正在評估你的煩惱...</p>
-        </div>
+        <div id="loadingUI" style="display:none;"><p class="loading-text">主子正在評估你的煩惱...</p></div>
         <div id="drawUI">
             <p style="font-size:1.1rem; line-height:2;">煩惱已被掩埋。<br>獲取「貓咪主子」啟示？</p>
             <button onclick="draw()">[ 請主子指點 ]</button>
         </div>
     </div>
-
     <div id="step4" class="stage">
         <div class="cat-card">
             <img id="resImg" class="cat-img" src="">
@@ -115,7 +96,9 @@
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
 
     function init() {
-        document.getElementById('bgm').play().catch(()=>{});
+        const bgm = document.getElementById('bgm');
+        bgm.volume = 0.6;
+        bgm.play().catch(e => console.log("等待手動播放"));
         nav('step0', 'step1');
         setTimeout(() => nav('step1', 'step2'), 2500);
     }
@@ -141,14 +124,13 @@
     function draw() {
         document.getElementById('drawUI').style.display = 'none';
         document.getElementById('loadingUI').style.display = 'block';
-        
         setTimeout(() => {
             const c = DECK[Math.floor(Math.random() * DECK.length)];
             document.getElementById('resImg').src = c.img;
             document.getElementById('resTitle').innerText = c.n;
             document.getElementById('resContent').innerText = c.m;
             nav('step3', 'step4');
-        }, 1200);
+        }, 1500);
     }
 
     function createPts() {
