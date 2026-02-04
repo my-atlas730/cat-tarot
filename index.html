@@ -29,14 +29,15 @@
 </head>
 <body>
 
-<audio id="bgm" loop preload="auto" src="https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3"></audio>
+<audio id="bgm" loop preload="auto" src="https://actions.google.com/sounds/v1/ambiences/morning_birds.ogg"></audio>
 <canvas id="canvas"></canvas>
 
 <div class="container">
     <div id="step0" class="stage active">
         <h1>CAT it go</h1>
         <p style="color:#666; letter-spacing: 3px;">讓煩惱隨貓砂而去</p>
-        <button onclick="init()">[ 進入儀式 ]</button>
+        <button id="startBtn" onclick="init()">[ 進入儀式 ]</button>
+        <p style="font-size: 0.6rem; color: #333; margin-top: 10px;">點擊即代表開啟主子音訊</p>
     </div>
     <div id="step1" class="stage"><p style="font-size:1.2rem; color:#fff; letter-spacing: 2px;">請放下你的執念...</p></div>
     <div id="step2" class="stage">
@@ -97,8 +98,16 @@
 
     function init() {
         const bgm = document.getElementById('bgm');
-        bgm.volume = 0.6;
-        bgm.play().catch(e => console.log("等待手動播放"));
+        // 關鍵：在使用者點擊按鈕的瞬間直接觸發播放
+        bgm.play().then(() => {
+            console.log("儀式音樂啟動");
+        }).catch(err => {
+            console.log("播放失敗，嘗試強制啟動");
+            bgm.muted = true; // 先靜音播放
+            bgm.play();
+            bgm.muted = false; // 再取消靜音
+        });
+
         nav('step0', 'step1');
         setTimeout(() => nav('step1', 'step2'), 2500);
     }
