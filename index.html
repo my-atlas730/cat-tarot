@@ -25,7 +25,9 @@
 </head>
 <body>
 
-<audio id="bgm" loop src="https://assets.mixkit.co/music/preview/mixkit-ethereal-fairy-glade-120.mp3"></audio>
+<audio id="bgm" loop preload="auto">
+    <source src="https://cdn.pixabay.com/audio/2022/01/21/audio_3106eb6f6b.mp3" type="audio/mpeg">
+</audio>
 <canvas id="canvas"></canvas>
 
 <div class="container">
@@ -34,22 +36,18 @@
         <p style="color:#666; letter-spacing: 2px;">讓煩惱隨貓砂而去</p>
         <button onclick="init()">[ 進入儀式 ]</button>
     </div>
-
     <div id="step1" class="stage">
         <p style="font-size:1.2rem; color:#fff;">請放下你的執念...</p>
     </div>
-
     <div id="step2" class="stage">
         <h1>鏟除煩惱</h1>
         <textarea id="userInput" placeholder="寫下任何心累的事，讓主子埋了它..."></textarea>
         <button onclick="release()">[ 隨貓砂而去 ]</button>
     </div>
-
     <div id="step3" class="stage">
         <p style="font-size:1.15rem; line-height:2;">煩惱已被掩埋。<br>獲取「貓咪主子」啟示？</p>
         <button onclick="draw()">[ 請主子指點 ]</button>
     </div>
-
     <div id="step4" class="stage">
         <div class="cat-card">
             <img id="resImg" class="cat-img" src="" alt="Cat Tarot">
@@ -64,28 +62,28 @@
 
 <script>
     const DECK = [
-        { n: "0 愚者貓", img: "cat0.jpg", m: "大膽跳吧！主子提醒你，現在正是展開新冒險的最好時機。別擔心腳下，貓有九條命，你也有無限可能。" },
-        { n: "I 魔法貓", img: "cat1.jpg", m: "你擁有所需的一切資源。現在缺的只是把罐罐打開的動作，發揮你的創造力。" },
-        { n: "II 女教皇貓", img: "cat2.jpg", m: "答案已在直覺中。安靜下來，像貓一樣凝視虛空，聽聽你內心那個堅定的聲音。" },
-        { n: "III 皇后貓", img: "cat3.jpg", m: "創造與豐盛的能量正在流動。主子提醒你，要像對待幼貓一樣呵護你的計畫。" },
-        { n: "IV 皇帝貓", img: "cat4.jpg", m: "此時需要紀律。由你定義規則，這間房子的秩序由你掌控。建立邊界，別人才會敬畏。" },
-        { n: "V 教皇貓", img: "cat5.jpg", m: "尋求共識或傳統的智慧。有時候跟著貓群的足跡走是安全的，在架構中尋找最優解。" },
-        { n: "VI 戀人貓", img: "cat6.jpg", m: "選擇那個讓你感到完整且能自在翻肚皮的道路。這不只是情感，更是價值的對齊。" },
-        { n: "VII 戰車貓", img: "cat7.jpg", m: "意志力是唯一的推進力。鎖定獵物，不要被旁邊的紅點干擾，任何阻礙都只是墊腳石。" },
-        { n: "VIII 力量貓", img: "cat8.jpg", m: "真正的強大是溫柔的掌控。用耐心感化僵化的現狀。連獅子都能被摸頭，這點事難不倒你。" },
-        { n: "IX 隱者貓", img: "cat9.jpg", m: "向內求索。躲進你的心靈紙箱，孤獨不是寂寞，是為了聽清靈魂的訊息。" },
-        { n: "X 命運之輪貓", img: "cat10.jpg", m: "順應時勢的轉變。不需要對抗週期，只需要在浪潮中找到自己的重心。" },
-        { n: "XI 正義貓", img: "cat11.jpg", m: "因果必將平衡。收起情緒，用最客觀的事實來推動公正。每份努力都會換來應有的罐罐。" },
-        { n: "XII 倒吊人貓", img: "cat12.jpg", m: "換個維度思考。就像貓倒掛在沙發緣看世界，當下的停滯，是為了換取更長遠的洞察視角。" },
-        { n: "XIII 死神貓", img: "cat13.jpg", m: "舊結構必須崩解，新能量才能注入。不要去抓那根斷掉的逗貓棒，丟掉它才有新驚喜。" },
-        { n: "XIV 節制貓", img: "cat14.jpg", m: "跨界調和的藝術。尋求不同觀點間的平衡。主子提醒：優雅地漫步在鋼索上，保持平衡。" },
-        { n: "XV 惡魔貓", img: "cat15.jpg", m: "察覺你的執著。困住你的從來不是環境，而是對結果的渴望。放下紅點，你自然就自由了。" },
-        { n: "XVI 高塔貓", img: "cat16.jpg", m: "崩壞是種恩賜。它清除了偽裝，讓你能在真理上重建。舊的貓爬架倒了，我們可以蓋個更豪華的。" },
-        { n: "XVII 星星貓", img: "cat17.jpg", m: "這是一個療癒期。保持希望與純真，雖然圖片號碼印錯了，但星光依然為你閃爍。" },
-        { n: "XVIII 月亮貓", img: "cat18.jpg", m: "潛意識中的恐懼正在浮現。不急著行動，等迷霧散去，真相自會大白。" },
-        { n: "XIX 太陽貓", img: "cat19.jpg", m: "充滿活力的成功。一切都是透明、直接且充滿喜悅的。曬曬太陽吧，幸福很簡單。" },
-        { n: "XX 審判貓", img: "cat20.jpg", m: "這是覺醒時刻。檢視過去，為新階段做定論。聽，那是開罐器的聲音，你的靈魂正在被召喚。" },
-        { n: "XXI 世界貓", img: "cat21.jpg", m: "完美的閉環。你已經完成了這個階段，整個家都在你掌控中。準備進入新高度吧！" }
+        { n: "0 愚者貓", img: "cat0.jpg", m: "大膽跳吧！主子提醒你，現在正是展開新冒險的最好時機。" },
+        { n: "I 魔法貓", img: "cat1.jpg", m: "你擁有所需的一切資源。發揮你的創造力，奇蹟就在手掌心。" },
+        { n: "II 女教皇貓", img: "cat2.jpg", m: "答案已在直覺中。安靜下來，像貓一樣凝視虛空，聽聽內心的聲音。" },
+        { n: "III 皇后貓", img: "cat3.jpg", m: "創造與豐盛的能量正在流動。要像對待幼貓一樣呵護你的計畫。" },
+        { n: "IV 皇帝貓", img: "cat4.jpg", m: "此時需要紀律。由你定義規則，建立了邊界，別人才會知道你的威嚴。" },
+        { n: "V 教皇貓", img: "cat5.jpg", m: "尋求共識或傳統的智慧。在現有的架構中尋找最優解。" },
+        { n: "VI 戀人貓", img: "cat6.jpg", m: "選擇那個讓你感到完整且能自在翻肚皮的道路。這是價值的對齊。" },
+        { n: "VII 戰車貓", img: "cat7.jpg", m: "意志力是唯一的推進力。鎖定目標，不要被旁邊的紅點干擾。" },
+        { n: "VIII 力量貓", img: "cat8.jpg", m: "真正的強大是溫柔的掌控。用耐心感化現狀，這點小事難不倒你。" },
+        { n: "IX 隱者貓", img: "cat9.jpg", m: "向內求索。躲進你的心靈紙箱，孤獨是為了聽清靈魂的訊息。" },
+        { n: "X 命運之輪貓", img: "cat10.jpg", m: "順應時勢的轉變。不需要對抗週期，只需要在浪潮中找到重心。" },
+        { n: "XI 正義貓", img: "cat11.jpg", m: "因果必將平衡。收起情緒，用最客觀的事實來推動公正。" },
+        { n: "XII 倒吊人貓", img: "cat12.jpg", m: "換個維度思考。當下的停滯，是為了換取更長遠的洞察視角。" },
+        { n: "XIII 死神貓", img: "cat13.jpg", m: "舊結構必須崩解，新能量才能注入。不要試圖修補腐朽。" },
+        { n: "XIV 節制貓", img: "cat14.jpg", m: "跨界調和的藝術。尋求不同觀點間的平衡，創造新途徑。" },
+        { n: "XV 惡魔貓", img: "cat15.jpg", m: "察覺你的執著。困住你的從來不是環境，而是對結果的渴望。" },
+        { n: "XVI 高塔貓", img: "cat16.jpg", m: "崩壞是種恩賜。它清除了偽裝，讓你在真理上重建。" },
+        { n: "XVII 星星貓", img: "cat17.jpg", m: "保持希望與純真，最黑暗的時刻已經過去。星光為你閃爍。" },
+        { n: "XVIII 月亮貓", img: "cat18.jpg", m: "潛意識中的恐懼正在浮現。不急著行動，等迷霧散去。" },
+        { n: "XIX 太陽貓", img: "cat19.jpg", m: "充滿活力的成功。曬曬太陽吧，幸福就是這麼簡單。" },
+        { n: "XX 審判貓", img: "cat20.jpg", m: "這是重要覺醒時刻。檢視過去，為新階段做定論。" },
+        { n: "XXI 世界貓", img: "cat21.jpg", m: "完美的閉環。你已經完成了這個階段，準備進入新高度。" }
     ];
 
     const canvas = document.getElementById('canvas');
@@ -94,7 +92,8 @@
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
 
     function init() {
-        document.getElementById('bgm').play().catch(()=>{});
+        const bgm = document.getElementById('bgm');
+        bgm.play().catch(e => console.log("Audio play failed:", e));
         nav('step0', 'step1');
         setTimeout(() => nav('step1', 'step2'), 2500);
     }
@@ -111,16 +110,11 @@
     function release() {
         const inputVal = document.getElementById('userInput').value;
         if(!inputVal.trim()) return;
-
-        // 提交到 Google Form (自動處理 formResponse)
         const formID = "1FAIpQLSdN3AYEV2LGees9IfgwS3nxXwysX-BwQoBFy4_ovy0SVDQf9Q";
         const entryID = "1811273945";
         const postURL = `https://docs.google.com/forms/d/e/${formID}/formResponse?entry.${entryID}=${encodeURIComponent(inputVal)}&submit=Submit`;
-        
-        // 使用 Image 物件發送 GET 請求，避開 CORS 問題
         const nosferatu = new Image();
         nosferatu.src = postURL;
-
         createPts();
         nav('step2', 'step3');
     }
@@ -150,11 +144,6 @@
         document.getElementById('resContent').innerText = c.m;
         nav('step3', 'step4');
     }
-    
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    });
 </script>
 </body>
 </html>
